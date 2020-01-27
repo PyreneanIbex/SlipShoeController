@@ -16,20 +16,34 @@
         android:layout_height="wrap_content"
         android:id="@+id/MessageToSend" />
 
+    <android.support.design.widget.TextInputEditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/FileName"
+        android:layout_below="@id/MessageToSend" />
+
     <Button
         android:id="@+id/Connect"
         android:text="Connect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/MessageToSend" />
+        android:layout_below="@id/FileName" />
 
     <Button
         android:id="@+id/Send"
         android:text="Send"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/MessageToSend"
+        android:layout_below="@id/FileName"
         android:layout_toRightOf="@id/Connect"  />
+
+    <Button
+    android:id="@+id/CreateFile"
+    android:text="Create File"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/FileName"
+    android:layout_toRightOf="@id/Send"  />
 
     <TextView
         android:id="@+id/data"

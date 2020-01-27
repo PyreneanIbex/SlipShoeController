@@ -12,6 +12,8 @@ using Android.Bluetooth;
 using Java.Util;
 using System.Text;
 using System.IO;
+using Android;
+using Android.Content.PM;
 
 namespace SlipShoeController
 {
@@ -20,8 +22,9 @@ namespace SlipShoeController
     {
 
         TextView Data;
-        Button Send, Connect;
+        Button Send, Connect, CreateFile;
         TextInputEditText MessageToSend;
+        TextInputEditText FileName;
         BluetoothAdapter BTAdapter = BluetoothAdapter.DefaultAdapter;
         BluetoothDevice BTDevice;
         BluetoothSocket BTSocket;
@@ -39,11 +42,22 @@ namespace SlipShoeController
             MessageToSend = FindViewById<TextInputEditText>(Resource.Id.MessageToSend);
             Send = FindViewById<Button>(Resource.Id.Send);
             Connect = FindViewById<Button>(Resource.Id.Connect);
+            CreateFile = FindViewById<Button>(Resource.Id.CreateFile);
             Data = FindViewById<TextView>(Resource.Id.data);
+            FileName = FindViewById<TextInputEditText>(Resource.Id.FileName);
 
             //Set event methods for button clicks
             Send.Click += OnSendClick;
             Connect.Click += OnConnectClick;
+            CreateFile.Click += OnCreateFileClick;
+
+            //Ask for permission to work with files
+            if (PackageManager.CheckPermission(Manifest.Permission.ReadExternalStorage, PackageName) != Permission.Granted
+                && PackageManager.CheckPermission(Manifest.Permission.WriteExternalStorage, PackageName) != Permission.Granted)
+            {
+                var permissions = new string[] { Manifest.Permission.ReadExternalStorage, Manifest.Permission.WriteExternalStorage };
+                RequestPermissions(permissions, 1);
+            }
         }
 
         //Open the connection to the bluetooth device
@@ -106,6 +120,18 @@ namespace SlipShoeController
             byte[] buffer = Encoding.UTF8.GetBytes(MessageToSend.Text);
 
             BTSocket.OutputStream.Write(buffer, 0, buffer.Length);
+        }
+
+        private void OnCreateFileClick(object sender, EventArgs eventArgs)
+        {
+            string DirPath = Android.OS.Environment.ExternalStorageDirectory.AbsolutePath;
+
+            Directory.CreateDirectory(Path.Combine(DirPath, "SlipShoeTrials"));
+
+            var fs = File.Create(Path.Combine(DirPath, "SlipShoeTrials", FileName.Text));
+            fs.Close();
+
+            File.WriteAllText(Path.Combine(DirPath, "SlipShoeTrials", FileName.Text), "wut");
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
