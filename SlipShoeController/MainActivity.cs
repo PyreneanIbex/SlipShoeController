@@ -98,15 +98,8 @@ namespace SlipShoeController
                         InputStream.Read(buf);
 
                         string data = Encoding.UTF8.GetString(buf);
-
-                        if (data.Length > 0)
-                        {
-                            this.RunOnUiThread(() =>
-                            {
-                                Data.Text += data;
-                            });
-                        }
-                        Thread.Sleep(100);
+                        
+                        File.AppendAllText(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, "SlipShoeTrials", FileName.Text), data);
                     }
                 }
             }
@@ -130,8 +123,6 @@ namespace SlipShoeController
 
             var fs = File.Create(Path.Combine(DirPath, "SlipShoeTrials", FileName.Text));
             fs.Close();
-
-            File.WriteAllText(Path.Combine(DirPath, "SlipShoeTrials", FileName.Text), "wut");
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
