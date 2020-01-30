@@ -25,10 +25,7 @@ namespace SlipShoeController
         Button Send, Connect, CreateFile;
         TextInputEditText MessageToSend;
         TextInputEditText FileName;
-        BluetoothAdapter BTAdapter = BluetoothAdapter.DefaultAdapter;
-        BluetoothDevice BTDevice;
-        BluetoothSocket BTSocket;
-        Thread BTThread;
+        BTUtil BTUtility;
 
         bool Connected = false;
 
@@ -49,7 +46,9 @@ namespace SlipShoeController
             //Set event methods for button clicks
             Send.Click += OnSendClick;
             Connect.Click += OnConnectClick;
-            CreateFile.Click += OnCreateFileClick;
+
+            //Create instances of the supporting classes
+            BTUtility = new BTUtil();
 
             //Ask for permission to work with files
             if (PackageManager.CheckPermission(Manifest.Permission.ReadExternalStorage, PackageName) != Permission.Granted
@@ -63,66 +62,26 @@ namespace SlipShoeController
         //Open the connection to the bluetooth device
         private void OnConnectClick(object sender, EventArgs eventArgs)
         {
-            Data.Append("\nConnecting\n");
+            FileUtil.CreateFile(FileName.Text);
+            BTUtility.FileName = FileName.Text;
 
-            //Find the desired module from the list
-            BTDevice = (from bd in BTAdapter.BondedDevices where bd.Name == "DSD TECH HC-05" select bd).FirstOrDefault();
-
-            if(!Connected)
+            //Establish a bluetooth connection
+            if (BTUtility.Connect() && !Connected)
             {
-                //Create a socket to communicate through
-                BTSocket = BTDevice.CreateRfcommSocketToServiceRecord(UUID.FromString("00001101-0000-1000-8000-00805f9b34fb"));
-                BTSocket.Connect();
-
-                //Start the background thread listening for data incoming from bluetooth
-                BTThread = new Thread(() => { BluetoothListener(); });
-                BTThread.Start();
+                Data.Append("Connected\n");
                 Connected = true;
             }
-            
-        }
-
-        private void BluetoothListener()
-        {
-            try
+            else
             {
-                var InputStream = (BTSocket.InputStream as InputStreamInvoker).BaseInputStream;
-
-                while (true)
-                {                
-
-                    if(InputStream.Available() > 0)
-                    {
-                        byte[] buf = new byte[InputStream.Available()];
-
-                        InputStream.Read(buf);
-
-                        string data = Encoding.UTF8.GetString(buf);
-                        
-                        File.AppendAllText(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, "SlipShoeTrials", FileName.Text), data);
-                    }
-                }
-            }
-            catch (ThreadAbortException) { }
+                Data.Append("Could not connect");
+                Connected = false;
+            }     
         }
 
         private void OnSendClick(object sender, EventArgs eventArgs)
         {
-            Data.Append("\nSending: " + MessageToSend.Text + "\n");
-
-            byte[] buffer = Encoding.UTF8.GetBytes(MessageToSend.Text);
-
-            BTSocket.OutputStream.Write(buffer, 0, buffer.Length);
-        }
-
-        private void OnCreateFileClick(object sender, EventArgs eventArgs)
-        {
-            string DirPath = Android.OS.Environment.ExternalStorageDirectory.AbsolutePath;
-
-            Directory.CreateDirectory(Path.Combine(DirPath, "SlipShoeTrials"));
-
-            var fs = File.Create(Path.Combine(DirPath, "SlipShoeTrials", FileName.Text));
-            fs.Close();
+            //Send data through bluetooth
+            BTUtility.Send(MessageToSend.Text);
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
