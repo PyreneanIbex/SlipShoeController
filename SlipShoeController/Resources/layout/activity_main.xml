@@ -12,46 +12,128 @@
     tools:gridSpec="0|4|#0093eeff|K:#ee8700ff:16,l:72,l:16,r|S:#83ee00ff:16,0,l:16,56,l:16,0,r">
 
     <android.support.design.widget.TextInputEditText
-        android:layout_width="match_parent"
+        android:layout_width="206dp"
         android:layout_height="wrap_content"
-        android:id="@+id/MessageToSend" />
-
-    <android.support.design.widget.TextInputEditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/FileName"
-        android:layout_below="@id/MessageToSend" />
+        android:text=".csv"
+        android:id="@+id/FileName" 
+        android:layout_toRightOf="@id/FileLabel"/>
 
     <Button
         android:id="@+id/Connect"
         android:text="Connect"
-        android:layout_width="wrap_content"
+        android:layout_marginTop="30dp"
+        android:textSize="20dp"
+        android:background="@android:color/black"
+        android:textColor="@android:color/white"
+        android:layout_marginLeft="15dp"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/FileName" />
+        android:layout_below="@id/PhaseMenu" />
 
     <Button
-        android:id="@+id/Send"
-        android:text="Send"
-        android:layout_width="wrap_content"
+        android:id="@+id/Disconnect"
+        android:text="Disconnect"
+        android:layout_marginTop="30dp"
+        android:textSize="20dp"
+        android:background="@android:color/black"
+        android:textColor="@android:color/white"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/FileName"
+        android:layout_marginLeft="80dp"
+        android:layout_below="@id/PhaseMenu"
         android:layout_toRightOf="@id/Connect"  />
 
     <Button
-    android:id="@+id/CreateFile"
-    android:text="Create File"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_below="@id/FileName"
-    android:layout_toRightOf="@id/Send"  />
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:text="ARM"
+        android:textSize="20dp"
+        android:layout_marginLeft="168dp"
+        android:layout_marginTop="30dp"
+        android:textColor="@android:color/white"
+        android:background="@drawable/roundbutton"
+        android:id="@+id/ARM"
+        android:layout_below="@id/Connect"  />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/StatLabel"
+        android:text="Status:" 
+        android:textSize="20dp"
+        android:textColor="@android:color/white"
+        android:layout_below="@id/ARM"
+        android:layout_marginTop="5dp"
+        android:background="@android:color/black"/>
 
     <TextView
         android:id="@+id/data"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="bottom"
+        android:layout_height="250dp"
         android:scrollbars="vertical"
-        android:layout_below="@id/Send"     />
+        android:layout_below="@id/StatBar" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:id="@+id/StatBar"
+        android:layout_below="@id/StatLabel"
+        android:background="@android:color/black" />
+
+    <Spinner
+        android:layout_width="206dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/FileName"
+        android:layout_toRightOf="@id/FileLabel"
+        android:id="@+id/PhaseMenu" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="1dp"
+        android:background="@android:color/black"
+        android:layout_below="@id/PhaseMenu"
+        android:id="@+id/borderline"    />
+
+    <TextView
+        android:text="Enter a File Name:"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textSize="20dp"
+        android:layout_width="206dp"
+        android:layout_height="40dp"
+        android:background="@android:color/black"
+        android:textColor="@android:color/white"
+        android:id="@+id/FileLabel" />
+
+    <TextView
+        android:text="Select Phase:"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textSize="20dp"
+        android:layout_width="206dp"
+        android:layout_height="30dp"
+        android:background="@android:color/holo_red_dark"
+        android:textColor="@android:color/white"
+        android:id="@+id/PhaseLabel" 
+        android:layout_below="@id/FileLabel" />
+
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:id="@+id/UNL"
+        android:layout_below="@id/data"
+        android:layout_toRightOf="@id/BRB"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/nebraska_n_rgb" />    
+        
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="100dp"
+        android:id="@+id/BRB"
+        android:layout_below="@id/data"
+        android:src="@drawable/imageedit_11_2158982387" />
 
 </RelativeLayout>
 

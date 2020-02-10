@@ -59,6 +59,19 @@ namespace SlipShoeController
         }
 
         /// <summary>
+        /// Ends the listener thread and closes the bluetooth socket
+        /// </summary>
+        public void Disconnect()
+        {
+            if(BTThread != null)
+            {
+                BTThread.Abort();
+                BTThread = null;
+                BTSocket.Close();
+            }            
+        }
+
+        /// <summary>
         /// Thread method. Loops infinitely checking for incoming data and appending it to a file
         /// </summary>
         private void BluetoothListener()
@@ -93,7 +106,12 @@ namespace SlipShoeController
         public void Send(string message)
         {
             byte[] buffer = Encoding.UTF8.GetBytes(message);
-            BTSocket.OutputStream.Write(buffer, 0, buffer.Length);
+            try
+            {
+                BTSocket.OutputStream.Write(buffer, 0, buffer.Length);
+            }
+            catch { }
+
         }
     }
 }

@@ -22,12 +22,14 @@ namespace SlipShoeController
     {
 
         TextView Data;
-        Button Send, Connect, CreateFile;
-        TextInputEditText MessageToSend;
+        Button ARM, Connect, Disconnect;
         TextInputEditText FileName;
         BTUtil BTUtility;
+        Spinner PhaseMenu;
 
         bool Connected = false;
+        string[] Phases = { "Heel Contact", "Loading Response", "Mid Stance", "Terminal Swing", "Pre-Swing" };
+        string Phase = "Heel Contact";
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -36,19 +38,28 @@ namespace SlipShoeController
             SetContentView(Resource.Layout.activity_main);
 
             //Get the UI elements as objects
-            MessageToSend = FindViewById<TextInputEditText>(Resource.Id.MessageToSend);
-            Send = FindViewById<Button>(Resource.Id.Send);
             Connect = FindViewById<Button>(Resource.Id.Connect);
-            CreateFile = FindViewById<Button>(Resource.Id.CreateFile);
+            Disconnect = FindViewById<Button>(Resource.Id.Disconnect);
+            ARM = FindViewById<Button>(Resource.Id.ARM);
             Data = FindViewById<TextView>(Resource.Id.data);
             FileName = FindViewById<TextInputEditText>(Resource.Id.FileName);
+            PhaseMenu = FindViewById<Spinner>(Resource.Id.PhaseMenu);
 
             //Set event methods for button clicks
-            Send.Click += OnSendClick;
+            ARM.Click += OnARMClick;
             Connect.Click += OnConnectClick;
+            Disconnect.Click += OnDisconnectClick;
 
             //Create instances of the supporting classes
             BTUtility = new BTUtil();
+
+            //Initalize the spinner phase choices
+            PhaseMenu.ItemSelected += new EventHandler<AdapterView.ItemSelectedEventArgs>(OnPhaseSelect);
+            var adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleSpinnerItem, Phases);
+            PhaseMenu.Adapter = adapter;
+
+            //Allow scrolling through the status window
+            Data.MovementMethod = new Android.Text.Method.ScrollingMovementMethod();
 
             //Ask for permission to work with files
             if (PackageManager.CheckPermission(Manifest.Permission.ReadExternalStorage, PackageName) != Permission.Granted
@@ -68,20 +79,45 @@ namespace SlipShoeController
             //Establish a bluetooth connection
             if (BTUtility.Connect() && !Connected)
             {
-                Data.Append("Connected\n");
+                Data.Append("\nConnected");
                 Connected = true;
             }
             else
             {
-                Data.Append("Could not connect");
+                Data.Append("\nCould not connect");
                 Connected = false;
             }     
         }
 
-        private void OnSendClick(object sender, EventArgs eventArgs)
+        private void OnDisconnectClick(object sender, EventArgs eventArgs)
         {
-            //Send data through bluetooth
-            BTUtility.Send(MessageToSend.Text);
+            BTUtility.Disconnect();
+            Data.Append("\nSlip Shoe now disconnected");
+        }
+
+        private void OnARMClick(object sender, EventArgs eventArgs)
+        {
+            if(FileName.Text.EndsWith(".csv"))
+            {
+                for (int i = 0; i < Phases.Length; i++)
+                {
+                    if (Phase.Equals(Phases[i]))
+                    {
+                        BTUtility.Send(i.ToString());
+                        Data.Append("\nDevice armed for phase: " + Phases[i]);
+                    }
+                }
+            }
+            else
+            {
+                Data.Append("\nFile Name must end in .csv!");
+            }
+        }
+
+        private void OnPhaseSelect(object sender, AdapterView.ItemSelectedEventArgs e)
+        {
+            //Set the global string to the selected phase
+            Phase = PhaseMenu.GetItemAtPosition(e.Position).ToString();
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
