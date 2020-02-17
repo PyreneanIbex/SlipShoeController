@@ -59,12 +59,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/StatLabel"
-        android:text="Status:" 
+        android:text="Status: " 
         android:textSize="20dp"
         android:textColor="@android:color/white"
         android:layout_below="@id/ARM"
         android:layout_marginTop="5dp"
         android:background="@android:color/black"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/StatLabel"
+        android:layout_below="@id/ARM"
+        android:textSize="20dp"
+        android:layout_marginLeft="1dp"
+        android:layout_marginTop="5dp"
+        android:id="@+id/Status"  />
 
     <TextView
         android:id="@+id/data"

@@ -21,7 +21,7 @@ namespace SlipShoeController
     public class MainActivity : AppCompatActivity
     {
 
-        TextView Data;
+        TextView Data, Status;
         Button ARM, Connect, Disconnect;
         TextInputEditText FileName;
         BTUtil BTUtility;
@@ -42,6 +42,7 @@ namespace SlipShoeController
             Disconnect = FindViewById<Button>(Resource.Id.Disconnect);
             ARM = FindViewById<Button>(Resource.Id.ARM);
             Data = FindViewById<TextView>(Resource.Id.data);
+            Status = FindViewById<TextView>(Resource.Id.Status);
             FileName = FindViewById<TextInputEditText>(Resource.Id.FileName);
             PhaseMenu = FindViewById<Spinner>(Resource.Id.PhaseMenu);
 
@@ -52,6 +53,8 @@ namespace SlipShoeController
 
             //Create instances of the supporting classes
             BTUtility = new BTUtil();
+
+            Status.Text = "Not Connected";
 
             //Initalize the spinner phase choices
             PhaseMenu.ItemSelected += new EventHandler<AdapterView.ItemSelectedEventArgs>(OnPhaseSelect);
@@ -80,6 +83,7 @@ namespace SlipShoeController
             if (BTUtility.Connect() && !Connected)
             {
                 Data.Append("\nConnected");
+                Status.Text = "Connected";
                 Connected = true;
             }
             else
@@ -93,6 +97,7 @@ namespace SlipShoeController
         {
             BTUtility.Disconnect();
             Data.Append("\nSlip Shoe now disconnected");
+            Status.Text = "Not Connected";
             Connected = false;
         }
 
