@@ -93,6 +93,7 @@ namespace SlipShoeController
         {
             BTUtility.Disconnect();
             Data.Append("\nSlip Shoe now disconnected");
+            Connected = false;
         }
 
         private void OnARMClick(object sender, EventArgs eventArgs)
