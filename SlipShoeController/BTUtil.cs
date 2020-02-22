@@ -43,10 +43,6 @@ namespace SlipShoeController
                 BTSocket = BTDevice.CreateRfcommSocketToServiceRecord(UUID.FromString("00001101-0000-1000-8000-00805f9b34fb"));
                 BTSocket.Connect();
 
-                //Start the background thread listening for data incoming from bluetooth
-                BTThread = new Thread(() => { BluetoothListener(); });
-                BTThread.Start();
-
                 //indicate success
                 return true;
             }
@@ -72,13 +68,26 @@ namespace SlipShoeController
         }
 
         /// <summary>
-        /// Thread method. Loops infinitely checking for incoming data and appending it to a file
+        /// Starts the background thread that stores data from the bluetooth
+        /// </summary>
+        public void StartLogging()
+        {
+            //Start the background thread listening for data incoming from bluetooth
+            BTThread = new Thread(() => { BluetoothListener(); });
+            BTThread.Start();
+        }
+
+        /// <summary>
+        /// Thread method. Loops infinitely checking for incoming data and appending it to a file. Clears stream before looping.
         /// </summary>
         private void BluetoothListener()
         {
             try
             {
                 var InputStream = (BTSocket.InputStream as InputStreamInvoker).BaseInputStream;
+
+                //Clear any data in the stream right now
+                InputStream.Read(new byte[InputStream.Available()]);
 
                 while (true)
                 {
@@ -92,6 +101,7 @@ namespace SlipShoeController
                         //Convert the bytes to a string
                         string data = Encoding.UTF8.GetString(buf);
 
+                        //Add string to file
                         FileUtil.AppendToFile(data, FileName);
                     }
                 }

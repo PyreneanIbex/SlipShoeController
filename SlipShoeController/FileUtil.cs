@@ -15,6 +15,7 @@ namespace SlipShoeController
 {
     class FileUtil
     {
+        private static char[] InvalidChars = { '\\', '/', '@' };
         public static string DirPath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, "SlipShoeTrials");
        
         /// <summary>
@@ -46,6 +47,37 @@ namespace SlipShoeController
 
         }
 
+        /// <summary>
+        /// Checks for invalid characters in the file name
+        /// </summary>
+        /// <param name="FileName">Name of the file to check</param>
+        /// <returns>An invalid character in the name or O for OK</returns>
+        public static char CheckFileName(string FileName)
+        {
+            foreach(char c in Path.GetInvalidPathChars())
+            {
+                if(FileName.Contains(c))
+                {
+                    return c;
+                }
+            }
+
+            foreach (char c in InvalidChars)
+            {
+                if(FileName.Contains(c))
+                {
+                    return c;
+                }
+            }
+
+            return 'O';
+        }
+
+        /// <summary>
+        /// Appends string to file with specified name
+        /// </summary>
+        /// <param name="DataToAppend">String to add to file</param>
+        /// <param name="FileName">Name of the file to append to</param>
         public static void AppendToFile(string DataToAppend, string FileName)
         {
             File.AppendAllText(Path.Combine(DirPath, FileName), DataToAppend);

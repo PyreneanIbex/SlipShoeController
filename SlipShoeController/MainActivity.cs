@@ -22,7 +22,7 @@ namespace SlipShoeController
     {
 
         TextView Data, Status;
-        Button ARM, Connect, Disconnect;
+        Button ARM, Connect, Disconnect, StartLogs;
         TextInputEditText FileName;
         BTUtil BTUtility;
         Spinner PhaseMenu;
@@ -40,6 +40,7 @@ namespace SlipShoeController
             //Get the UI elements as objects
             Connect = FindViewById<Button>(Resource.Id.Connect);
             Disconnect = FindViewById<Button>(Resource.Id.Disconnect);
+            StartLogs = FindViewById<Button>(Resource.Id.StartLog);
             ARM = FindViewById<Button>(Resource.Id.ARM);
             Data = FindViewById<TextView>(Resource.Id.data);
             Status = FindViewById<TextView>(Resource.Id.Status);
@@ -50,6 +51,7 @@ namespace SlipShoeController
             ARM.Click += OnARMClick;
             Connect.Click += OnConnectClick;
             Disconnect.Click += OnDisconnectClick;
+            StartLogs.Click += OnStartLogClick;
 
             //Create instances of the supporting classes
             BTUtility = new BTUtil();
@@ -76,21 +78,21 @@ namespace SlipShoeController
         //Open the connection to the bluetooth device
         private void OnConnectClick(object sender, EventArgs eventArgs)
         {
-            FileUtil.CreateFile(FileName.Text);
-            BTUtility.FileName = FileName.Text;
-
             //Establish a bluetooth connection
-            if (BTUtility.Connect() && !Connected)
+            if(!Connected)
             {
-                Data.Append("\nConnected");
-                Status.Text = "Connected";
-                Connected = true;
+                if (BTUtility.Connect())
+                {
+                    Data.Append("\nConnected");
+                    Status.Text = "Connected";
+                    Connected = true;
+                }
+                else
+                {
+                    Data.Append("\nCould not connect");
+                    Connected = false;
+                }
             }
-            else
-            {
-                Data.Append("\nCould not connect");
-                Connected = false;
-            }     
         }
 
         private void OnDisconnectClick(object sender, EventArgs eventArgs)
@@ -99,6 +101,44 @@ namespace SlipShoeController
             Data.Append("\nSlip Shoe now disconnected");
             Status.Text = "Not Connected";
             Connected = false;
+        }
+
+        private void OnStartLogClick(object sender, EventArgs eventArgs)
+        {
+            //if connected check file name then start BTThread
+            if(Connected)
+            {
+                char InvalidChar = FileUtil.CheckFileName(FileName.Text);
+
+                if(InvalidChar == 'O')
+                {
+                    if(FileName.Text.EndsWith(".csv"))
+                    {
+                        if(FileUtil.CreateFile(FileName.Text))
+                        {
+                            //Set the filename and start logging
+                            BTUtility.FileName = FileName.Text;
+                            BTUtility.StartLogging();
+                        }
+                        else
+                        {
+                            Data.Append("\nError: FileName already exists");
+                        }
+                    }
+                    else
+                    {
+                        Data.Append("\nError: FileName must end in \".csv\"");
+                    }
+                }
+                else
+                {
+                    Data.Append("\nError: FileName contains invalid character: " + InvalidChar);
+                }
+            }
+            else
+            {
+                Data.Append("\nError: Connect bluetooth to start logging");
+            }
         }
 
         private void OnARMClick(object sender, EventArgs eventArgs)

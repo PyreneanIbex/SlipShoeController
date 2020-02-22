@@ -25,10 +25,23 @@
         android:textSize="20dp"
         android:background="@android:color/black"
         android:textColor="@android:color/white"
-        android:layout_marginLeft="15dp"
-        android:layout_width="150dp"
+        android:layout_marginLeft="1dp"
+        android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/PhaseMenu" />
+    
+    <Button
+        android:id="@+id/StartLog"
+        android:text="Start Log"
+        android:layout_marginTop="30dp"
+        android:textSize="20dp"
+        android:background="@android:color/black"
+        android:textColor="@android:color/white"
+        android:layout_marginLeft="10dp"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/PhaseMenu"
+        android:layout_toRightOf="@id/Connect"   />
 
     <Button
         android:id="@+id/Disconnect"
@@ -37,11 +50,12 @@
         android:textSize="20dp"
         android:background="@android:color/black"
         android:textColor="@android:color/white"
-        android:layout_width="150dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="1dp"
+        android:layout_width="130dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="80dp"
         android:layout_below="@id/PhaseMenu"
-        android:layout_toRightOf="@id/Connect"  />
+        android:layout_toRightOf="@id/StartLog"  />
 
     <Button
         android:layout_width="80dp"
