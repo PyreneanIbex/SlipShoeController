@@ -105,6 +105,9 @@ namespace SlipShoeController
 
         private void OnStartLogClick(object sender, EventArgs eventArgs)
         {
+            //Just in case, create the SlipShoeTrials directory
+            FileUtil.CreateDirectory();
+
             //if connected check file name then start BTThread
             if(Connected)
             {
@@ -119,6 +122,8 @@ namespace SlipShoeController
                             //Set the filename and start logging
                             BTUtility.FileName = FileName.Text;
                             BTUtility.StartLogging();
+                            Status.Text = "Logging";
+                            Data.Append("\nNow logging to file: " + FileName.Text);
                         }
                         else
                         {
