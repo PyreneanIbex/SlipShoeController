@@ -26,6 +26,7 @@ namespace SlipShoeController
         private BluetoothDevice BTDevice;
         private BluetoothSocket BTSocket;
         private Thread BTThread;
+        public bool IsConnected = false;
 
         /// <summary>
         /// Finds the dvice with the name defined in the private string. Opens a socket
@@ -43,6 +44,8 @@ namespace SlipShoeController
                 BTSocket = BTDevice.CreateRfcommSocketToServiceRecord(UUID.FromString("00001101-0000-1000-8000-00805f9b34fb"));
                 BTSocket.Connect();
 
+                IsConnected = true;
+
                 //indicate success
                 return true;
             }
@@ -59,11 +62,18 @@ namespace SlipShoeController
         /// </summary>
         public void Disconnect()
         {
+            if(IsConnected)
+            {
+                BTDevice = null;
+                BTSocket.Close();
+                BTSocket = null;
+                IsConnected = false;
+            }
+
             if(BTThread != null)
             {
                 BTThread.Abort();
                 BTThread = null;
-                BTSocket.Close();
             }            
         }
 

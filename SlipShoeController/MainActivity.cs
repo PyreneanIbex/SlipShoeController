@@ -27,7 +27,6 @@ namespace SlipShoeController
         BTUtil BTUtility;
         Spinner PhaseMenu;
 
-        bool Connected = false;
         string[] Phases = { "Heel Contact", "Loading Response", "Mid Stance", "Terminal Swing", "Pre-Swing" };
         string Phase = "Heel Contact";
 
@@ -79,18 +78,16 @@ namespace SlipShoeController
         private void OnConnectClick(object sender, EventArgs eventArgs)
         {
             //Establish a bluetooth connection
-            if(!Connected)
+            if(!BTUtility.IsConnected)
             {
                 if (BTUtility.Connect())
                 {
                     Data.Append("\nConnected");
                     Status.Text = "Connected";
-                    Connected = true;
                 }
                 else
                 {
                     Data.Append("\nCould not connect");
-                    Connected = false;
                 }
             }
         }
@@ -100,7 +97,6 @@ namespace SlipShoeController
             BTUtility.Disconnect();
             Data.Append("\nSlip Shoe now disconnected");
             Status.Text = "Not Connected";
-            Connected = false;
         }
 
         private void OnStartLogClick(object sender, EventArgs eventArgs)
@@ -109,7 +105,7 @@ namespace SlipShoeController
             FileUtil.CreateDirectory();
 
             //if connected check file name then start BTThread
-            if(Connected)
+            if(BTUtility.IsConnected)
             {
                 char InvalidChar = FileUtil.CheckFileName(FileName.Text);
 
