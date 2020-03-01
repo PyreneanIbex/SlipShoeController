@@ -92,7 +92,7 @@ namespace SlipShoeController
             }
             else
             {
-                Data.Append("Slip Shoe is already Connected");
+                Data.Append("\nSlip Shoe is already Connected");
             }
         }
 
@@ -101,7 +101,7 @@ namespace SlipShoeController
             //Send the stop code and disconnect
             if(!BTUtility.IsConnected)
             {
-                Data.Append("Slip Shoe is not Connected");
+                Data.Append("\nSlip Shoe is not Connected");
             }
             else
             {
