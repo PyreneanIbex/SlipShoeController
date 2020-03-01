@@ -90,13 +90,26 @@ namespace SlipShoeController
                     Data.Append("\nCould not connect");
                 }
             }
+            else
+            {
+                Data.Append("Slip Shoe is already Connected");
+            }
         }
 
         private void OnDisconnectClick(object sender, EventArgs eventArgs)
         {
-            BTUtility.Disconnect();
-            Data.Append("\nSlip Shoe now disconnected");
-            Status.Text = "Not Connected";
+            //Send the stop code and disconnect
+            if(!BTUtility.IsConnected)
+            {
+                Data.Append("Slip Shoe is not Connected");
+            }
+            else
+            {
+                BTUtility.Send("S");
+                BTUtility.Disconnect();
+                Data.Append("\nSlip Shoe now disconnected");
+                Status.Text = "Not Connected";
+            }
         }
 
         private void OnStartLogClick(object sender, EventArgs eventArgs)
@@ -115,8 +128,9 @@ namespace SlipShoeController
                     {
                         if(FileUtil.CreateFile(FileName.Text))
                         {
-                            //Set the filename and start logging
+                            //Set the filename, signal the module to start sending data, and start logging
                             BTUtility.FileName = FileName.Text;
+                            BTUtility.Send("L");
                             BTUtility.StartLogging();
                             Status.Text = "Logging";
                             Data.Append("\nNow logging to file: " + FileName.Text);

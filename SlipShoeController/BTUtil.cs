@@ -62,19 +62,20 @@ namespace SlipShoeController
         /// </summary>
         public void Disconnect()
         {
-            if(IsConnected)
-            {
-                BTDevice = null;
-                BTSocket.Close();
-                BTSocket = null;
-                IsConnected = false;
-            }
-
-            if(BTThread != null)
+            if (BTThread != null)
             {
                 BTThread.Abort();
                 BTThread = null;
-            }            
+            }
+
+            if (IsConnected)
+            {
+                BTDevice = null;
+                BTSocket.OutputStream.Close();
+                BTSocket.Close();
+                BTSocket = null;
+                IsConnected = false;
+            }         
         }
 
         /// <summary>
@@ -97,7 +98,7 @@ namespace SlipShoeController
                 var InputStream = (BTSocket.InputStream as InputStreamInvoker).BaseInputStream;
 
                 //Clear any data in the stream right now
-                InputStream.Read(new byte[InputStream.Available()]);
+               // InputStream.Read(new byte[InputStream.Available()]);
 
                 while (true)
                 {
@@ -116,7 +117,10 @@ namespace SlipShoeController
                     }
                 }
             }
-            catch (ThreadAbortException) { }
+            catch (ThreadAbortException)
+            {
+                BTSocket.InputStream.Close();
+            }
         }
 
         /// <summary>
