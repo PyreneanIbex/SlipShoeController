@@ -26,6 +26,7 @@ namespace SlipShoeController
         TextInputEditText FileName;
         BTUtil BTUtility;
         Spinner PhaseMenu;
+        Spinner DeviceMenu;
 
         string[] Phases = { "Heel Contact", "Loading Response", "Mid Stance", "Terminal Swing", "Pre-Swing" };
         string Phase = "Heel Contact";
@@ -45,6 +46,7 @@ namespace SlipShoeController
             Status = FindViewById<TextView>(Resource.Id.Status);
             FileName = FindViewById<TextInputEditText>(Resource.Id.FileName);
             PhaseMenu = FindViewById<Spinner>(Resource.Id.PhaseMenu);
+            DeviceMenu = FindViewById<Spinner>(Resource.Id.DeviceMenu);
 
             //Set event methods for button clicks
             ARM.Click += OnARMClick;
@@ -59,8 +61,13 @@ namespace SlipShoeController
 
             //Initalize the spinner phase choices
             PhaseMenu.ItemSelected += new EventHandler<AdapterView.ItemSelectedEventArgs>(OnPhaseSelect);
-            var adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleSpinnerItem, Phases);
-            PhaseMenu.Adapter = adapter;
+            var PhaseAdapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleSpinnerItem, Phases);
+            PhaseMenu.Adapter = PhaseAdapter;
+
+            //Initalize the BT devices spinner
+            DeviceMenu.ItemSelected += new EventHandler<AdapterView.ItemSelectedEventArgs>(OnDeviceSelect);
+            var DeviceAdapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleSpinnerItem, BTUtility.GetDevices());
+            DeviceMenu.Adapter = DeviceAdapter;
 
             //Allow scrolling through the status window
             Data.MovementMethod = new Android.Text.Method.ScrollingMovementMethod();
@@ -179,6 +186,10 @@ namespace SlipShoeController
         {
             //Set the global string to the selected phase
             Phase = PhaseMenu.GetItemAtPosition(e.Position).ToString();
+        }
+        private void OnDeviceSelect(object sender, AdapterView.ItemSelectedEventArgs e)
+        {
+            //
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)

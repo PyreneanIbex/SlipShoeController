@@ -137,5 +137,17 @@ namespace SlipShoeController
             catch { }
 
         }
+
+        public string[] GetDevices()
+        {
+            List<string> devices = new List<string>();
+
+            foreach(var Device in BTAdapter.BondedDevices)
+            {
+                devices.Add(Device.Name);
+            }
+
+            return devices.ToArray();
+        }
     }
 }
