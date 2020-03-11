@@ -30,6 +30,7 @@ namespace SlipShoeController
 
         string[] Phases = { "Heel Contact", "Loading Response", "Mid Stance", "Terminal Swing", "Pre-Swing" };
         string Phase = "Heel Contact";
+        string Device = " ";
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -64,10 +65,20 @@ namespace SlipShoeController
             var PhaseAdapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleSpinnerItem, Phases);
             PhaseMenu.Adapter = PhaseAdapter;
 
-            //Initalize the BT devices spinner
-            DeviceMenu.ItemSelected += new EventHandler<AdapterView.ItemSelectedEventArgs>(OnDeviceSelect);
-            var DeviceAdapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleSpinnerItem, BTUtility.GetDevices());
-            DeviceMenu.Adapter = DeviceAdapter;
+            //Make sure they have bluetooth devices paired to the phone
+            if(BTUtility.GetDevices().Count() > 0)
+            {
+                //Initalize the BT devices spinner
+                DeviceMenu.ItemSelected += new EventHandler<AdapterView.ItemSelectedEventArgs>(OnDeviceSelect);
+                var DeviceAdapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleSpinnerItem, BTUtility.GetDevices());
+                DeviceMenu.Adapter = DeviceAdapter;
+
+                Device = BTUtility.GetDevices()[0];
+            }
+            else
+            {
+                Data.Append("\nPlease pair a bluetooth device to the phone to use this app");
+            }            
 
             //Allow scrolling through the status window
             Data.MovementMethod = new Android.Text.Method.ScrollingMovementMethod();
@@ -81,28 +92,45 @@ namespace SlipShoeController
             }
         }
 
-        //Open the connection to the bluetooth device
+        /// <summary>
+        /// Open a connection with the bluetooth device
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
         private void OnConnectClick(object sender, EventArgs eventArgs)
         {
-            //Establish a bluetooth connection
-            if(!BTUtility.IsConnected)
+            if(!Device.Equals(" "))
             {
-                if (BTUtility.Connect())
+                //Establish a bluetooth connection
+                if (!BTUtility.IsConnected)
                 {
-                    Data.Append("\nConnected");
-                    Status.Text = "Connected";
+                    if (BTUtility.Connect(Device))
+                    {
+                        Data.Append("\nConnected");
+                        Status.Text = "Connected";
+                    }
+                    else
+                    {
+                        Data.Append("\nCould not connect to device: " + Device);
+                    }
                 }
                 else
                 {
-                    Data.Append("\nCould not connect");
+                    Data.Append("\nSlip Shoe is already Connected");
                 }
             }
             else
             {
-                Data.Append("\nSlip Shoe is already Connected");
+                Data.Append("\nNo bluetooth device selected");
             }
+            
         }
 
+        /// <summary>
+        /// Close the bluetooth connection and stop the background thread
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
         private void OnDisconnectClick(object sender, EventArgs eventArgs)
         {
             //Send the stop code and disconnect
@@ -119,6 +147,11 @@ namespace SlipShoeController
             }
         }
 
+        /// <summary>
+        /// Start a background thread appending data to a file
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
         private void OnStartLogClick(object sender, EventArgs eventArgs)
         {
             //Just in case, create the SlipShoeTrials directory
@@ -163,6 +196,11 @@ namespace SlipShoeController
             }
         }
 
+        /// <summary>
+        /// Send the arming command code for a specific phase
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
         private void OnARMClick(object sender, EventArgs eventArgs)
         {
             if(FileName.Text.EndsWith(".csv"))
@@ -182,22 +220,35 @@ namespace SlipShoeController
             }
         }
 
+        /// <summary>
+        /// Set the current phase to the user's selection
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnPhaseSelect(object sender, AdapterView.ItemSelectedEventArgs e)
         {
             //Set the global string to the selected phase
             Phase = PhaseMenu.GetItemAtPosition(e.Position).ToString();
         }
+
+        /// <summary>
+        /// Set the current BT device to the user's selection
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnDeviceSelect(object sender, AdapterView.ItemSelectedEventArgs e)
         {
-            //
+            Device = DeviceMenu.GetItemAtPosition(e.Position).ToString();
         }
+
+
+
 
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
             MenuInflater.Inflate(Resource.Menu.menu_main, menu);
             return true;
         }
-
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
             int id = item.ItemId;
@@ -208,13 +259,6 @@ namespace SlipShoeController
 
             return base.OnOptionsItemSelected(item);
         }
-
-        //private void FabOnClick(object sender, EventArgs eventArgs)
-        //{
-        //    View view = (View) sender;
-        //    Snackbar.Make(view, "Replace with your own action", Snackbar.LengthLong)
-        //        .SetAction("Action", (Android.Views.View.IOnClickListener)null).Show();
-        //}
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);

@@ -20,12 +20,11 @@ namespace SlipShoeController
     {
         public string FileName;
 
-        private readonly string DeviceName = "DSD TECH HC-05";
-
         private BluetoothAdapter BTAdapter = BluetoothAdapter.DefaultAdapter;
         private BluetoothDevice BTDevice;
         private BluetoothSocket BTSocket;
         private Thread BTThread;
+
         public bool IsConnected = false;
 
         /// <summary>
@@ -33,7 +32,7 @@ namespace SlipShoeController
         /// connection and starts a thread listening for data
         /// </summary>
         /// <returns>true for success, false for failure</returns>
-        public bool Connect()
+        public bool Connect(string DeviceName)
         {
             try
             {
@@ -111,6 +110,10 @@ namespace SlipShoeController
 
                         //Convert the bytes to a string
                         string data = Encoding.UTF8.GetString(buf);
+                        //string time = String.Concat(",", DateTime.Now.ToString("hh: mm:ss.fff"), "\n");
+
+                        ////Append the time down to milliseconds as a new column
+                        //data = data.Replace("\n", time);
 
                         //Add string to file
                         FileUtil.AppendToFile(data, FileName);
@@ -138,6 +141,10 @@ namespace SlipShoeController
 
         }
 
+        /// <summary>
+        /// Get a string array of the names of paired devices
+        /// </summary>
+        /// <returns></returns>
         public string[] GetDevices()
         {
             List<string> devices = new List<string>();
