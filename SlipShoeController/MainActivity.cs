@@ -108,6 +108,8 @@ namespace SlipShoeController
                     {
                         Data.Append("\nConnected");
                         Status.Text = "Connected";
+                        var toast = Toast.MakeText(Application.Context, "Please ensure test subject is safely harnessed", ToastLength.Short);
+                        toast.Show();
                     }
                     else
                     {
