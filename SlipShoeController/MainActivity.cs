@@ -162,6 +162,7 @@ namespace SlipShoeController
             //if connected check file name then start BTThread
             if(BTUtility.IsConnected)
             {
+                FileName.Text += ".csv";
                 char InvalidChar = FileUtil.CheckFileName(FileName.Text);
 
                 if(InvalidChar == 'O')
