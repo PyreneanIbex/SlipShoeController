@@ -162,21 +162,22 @@ namespace SlipShoeController
             //if connected check file name then start BTThread
             if(BTUtility.IsConnected)
             {
-                FileName.Text += ".csv";
-                char InvalidChar = FileUtil.CheckFileName(FileName.Text);
+                string Filename = FileName.Text;
+                Filename += ".csv";
+                char InvalidChar = FileUtil.CheckFileName(Filename);
 
                 if(InvalidChar == 'O')
                 {
-                    if(FileName.Text.EndsWith(".csv"))
+                    if(Filename.EndsWith(".csv"))
                     {
-                        if(FileUtil.CreateFile(FileName.Text))
+                        if(FileUtil.CreateFile(Filename))
                         {
                             //Set the filename, signal the module to start sending data, and start logging
-                            BTUtility.FileName = FileName.Text;
+                            BTUtility.FileName = Filename;
                             BTUtility.Send("L");
                             BTUtility.StartLogging();
                             Status.Text = "Logging";
-                            Data.Append("\nNow logging to file: " + FileName.Text);
+                            Data.Append("\nNow logging to file: " + Filename);
                         }
                         else
                         {
@@ -206,20 +207,13 @@ namespace SlipShoeController
         /// <param name="eventArgs"></param>
         private void OnARMClick(object sender, EventArgs eventArgs)
         {
-            if(FileName.Text.EndsWith(".csv"))
+            for (int i = 0; i < Phases.Length; i++)
             {
-                for (int i = 0; i < Phases.Length; i++)
+                if (Phase.Equals(Phases[i]))
                 {
-                    if (Phase.Equals(Phases[i]))
-                    {
-                        BTUtility.Send(i.ToString());
-                        Data.Append("\nDevice armed for phase: " + Phases[i]);
-                    }
+                    BTUtility.Send(i.ToString());
+                    Data.Append("\nDevice armed for phase: " + Phases[i]);
                 }
-            }
-            else
-            {
-                Data.Append("\nFile Name must end in .csv!");
             }
         }
 
