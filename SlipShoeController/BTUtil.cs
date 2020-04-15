@@ -13,6 +13,7 @@ using Android.Bluetooth;
 using Java.Util;
 using System.Threading;
 using System.IO;
+using System.Diagnostics;
 
 namespace SlipShoeController
 {
@@ -92,12 +93,17 @@ namespace SlipShoeController
         /// </summary>
         private void BluetoothListener()
         {
+            Stopwatch stopwatch = new Stopwatch();
+            int NumBytes = 0;
+
             try
             {
                 var InputStream = (BTSocket.InputStream as InputStreamInvoker).BaseInputStream;
 
                 //Clear any data in the stream right now
-               // InputStream.Read(new byte[InputStream.Available()]);
+                // InputStream.Read(new byte[InputStream.Available()]);
+
+                stopwatch.Start();
 
                 while (true)
                 {
@@ -106,6 +112,7 @@ namespace SlipShoeController
                     {
                         //Read in from the input stream
                         byte[] buf = new byte[InputStream.Available()];
+                        NumBytes += buf.Length;
                         InputStream.Read(buf);
 
                         //Convert the bytes to a string
@@ -117,6 +124,13 @@ namespace SlipShoeController
 
                         //Add string to file
                         FileUtil.AppendToFile(data, FileName);
+                    }
+
+                    if(NumBytes >= 1000000)
+                    {
+                        stopwatch.Stop();
+
+                        FileUtil.AppendToFile("\n\n" + stopwatch.ElapsedMilliseconds.ToString() + "\n\n", FileName);
                     }
                 }
             }
