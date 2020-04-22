@@ -28,7 +28,7 @@ namespace SlipShoeController
         Spinner PhaseMenu;
         Spinner DeviceMenu;
 
-        string[] Phases = { "Heel Contact", "Loading Response", "Mid Stance", "Terminal Swing", "Pre-Swing" };
+        string[] Phases = { "Heel Contact", "Loading Response", "Mid Stance", "Terminal Stance", "Pre-Swing" };
         string Phase = "Heel Contact";
         string Device = " ";
 
